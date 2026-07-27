@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>找不同小游戏</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header>
+    <h1>找不同小游戏</h1>
+    <div id="qr-container" title="扫码进入游戏"></div>
+  </header>
+
+  <main>
+    <div class="game-topbar">
+      <div>关卡 <span id="level">0</span>/<span id="total">0</span></div>
+      <div>已找 <span id="found">0</span>/<span id="need">0</span></div>
+      <div><button id="restart">重置</button></div>
+    </div>
+
+    <div class="images-wrap">
+      <div class="image-panel" id="left-panel">
+        <img id="left-img" alt="左图">
+        <canvas id="left-canvas"></canvas>
+      </div>
+      <div class="image-panel" id="right-panel">
+        <img id="right-img" alt="右图">
+        <canvas id="right-canvas"></canvas>
+      </div>
+    </div>
+
+    <div class="controls">
+      <button id="prev">上一关</button>
+      <button id="next">下一关</button>
+    </div>
+
+    <div id="message" class="message"></div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
