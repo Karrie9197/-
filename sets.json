@@ -1,0 +1,23 @@
+[
+  {
+    "id": "set1",
+    "name": "关卡 1",
+    "left": "set1/left.jpg",
+    "right": "set1/right.jpg",
+    "hotspots": []
+  },
+  {
+    "id": "set2",
+    "name": "关卡 2",
+    "left": "set2/left.jpg",
+    "right": "set2/right.jpg",
+    "hotspots": []
+  },
+  {
+    "id": "set3",
+    "name": "关卡 3",
+    "left": "set3/left.jpg",
+    "right": "set3/right.jpg",
+    "hotspots": []
+  }
+]

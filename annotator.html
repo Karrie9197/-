@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>差异标注工具</title>
+  <style>
+    body{font-family:Arial;padding:12px}
+    #panels{display:flex;gap:12px}
+    #right-img{max-width:600px;border:1px solid #ddd}
+    #right-canvas{position:absolute;left:0;top:0}
+    .controls{margin-bottom:8px}
+    ul{padding-left:16px}
+  </style>
+</head>
+<body>
+  <h2>差异标注工具</h2>
+  <div class="controls">
+    Set ID: <input id="set-id" value="set1">
+    Name: <input id="set-name" value="示例关">
+    Left path: <input id="left-path" value="set1/left.jpg" size="30">
+    Right path: <input id="right-path" value="set1/right.jpg" size="30">
+    <button id="load">加载右图</button>
+  </div>
+
+  <div id="panels">
+    <div style="position:relative;">
+      <img id="right-img" alt="右图">
+      <canvas id="right-canvas"></canvas>
+    </div>
+    <div>
+      <h4>已标注点</h4>
+      <ul id="hotspots-list"></ul>
+      <button id="download">下载本关 JSON</button>
+      <div style="margin-top:12px;">
+        点击右图添加点，点击列表中的“删除”移除点。
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const rightImg = document.getElementById('right-img');
+    const canvas = document.getElementById('right-canvas');
+    const ctx = canvas.getContext('2d');
+    const listEl = document.getElementById('hotspots-list');
+
+    let hotspots = [];
+
+    document.getElementById('load').addEventListener('click', ()=> {
+      const path = document.getElementById('right-path').value;
+      rightImg.src = path;
+    });
+
+    rightImg.addEventListener('load', ()=> {
+      canvas.width = rightImg.naturalWidth;
+      canvas.height = rightImg.naturalHeight;
+      canvas.style.width = rightImg.width + 'px';
+      canvas.style.height = rightImg.height + 'px';
+      redraw();
+    });
+
+    function redraw() {
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+      hotspots.forEach((h, i) => {
+        ctx.beginPath();
+        ctx.strokeStyle = 'rgba(255,0,0,0.6)';
+        ctx.lineWidth = 4;
+        ctx.arc(h.x * canvas.width, h.y * canvas.height, (h.r || 0.05)*Math.max(canvas.width, canvas.height), 0, Math.PI*2);
+        ctx.stroke();
+      });
+      renderList();
+    }
+
+    function renderList() {
+      listEl.innerHTML = '';
+      hotspots.forEach((h,i) => {
+        const li = document.createElement('li');
+        li.textContent = `#${i+1} x=${h.x.toFixed(3)} y=${h.y.toFixed(3)} r=${(h.r||0.05).toFixed(3)} `;
+        const del = document.createElement('button');
+        del.textContent = '删除';
+        del.style.marginLeft = '6px';
+        del.onclick = ()=> { hotspots.splice(i,1); redraw(); };
+        li.appendChild(del);
+        listEl.appendChild(li);
+      });
+    }
+
+    canvas.addEventListener('click', (e)=> {
+      const rect = rightImg.getBoundingClientRect();
+      const cx = (e.clientX - rect.left) / rect.width;
+      const cy = (e.clientY - rect.top) / rect.height;
+      hotspots.push({ x: cx, y: cy, r: 0.05 });
+      redraw();
+    });
+
+    document.getElementById('download').addEventListener('click', ()=> {
+      const out = {
+        id: document.getElementById('set-id').value || ('set' + Date.now()),
+        name: document.getElementById('set-name').value || '',
+        left: document.getElementById('left-path').value || '',
+        right: document.getElementById('right-path').value || '',
+        hotspots: hotspots
+      };
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(new Blob([JSON.stringify(out,null,2)], {type:'application/json'}));
+      a.download = out.id + '.json';
+      a.click();
+    });
+  </script>
+</body>
+</html>
